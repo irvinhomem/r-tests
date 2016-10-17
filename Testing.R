@@ -40,3 +40,9 @@ json_data_single$props[[2]]$feature_name
 # Get list-item containing the 4th json property name -> DNS-Req-Qnames-Enc-Comp-Entropy
 json_data_single[[3]][[4]]$feature_name
 json_data_single$props[[4]]$feature_name
+
+# Get average of entropy values for single pcap_json_object
+entropy_avg = mean(json_data_single$props[[4]]$values)
+
+# Get average IP-Req-Len for single pcap_json_object
+ip_len_avg =  mean(json_data_single$props[[2]]$values)
