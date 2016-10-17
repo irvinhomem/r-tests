@@ -10,9 +10,15 @@ dataset_path = paste(dirname(getwd()), "Datasets/JSON-4-Classes", sep="/")
 
 # paste(dataset_path, "HTTPovDNS-Static/All", sep="/")
 http_ov_dns_path = paste(dataset_path, "HTTPovDNS-Static/All", sep="/")
+ftp_ov_dns_path = paste(dataset_path, "FTPovDNS-DL/All", sep="/")
+http_s_ov_dns_path = paste(dataset_path, "HTTP-S-ovDNS-Static/All", sep="/")
+pop3_ov_dns_path = paste(dataset_path, "POP3ovDNS-DL-5txt-ATT/All", sep="/")
 
 # Get all files in "HTTPovDNS-Static" directory
 http_ov_dns_files <- list.files(path=http_ov_dns_path, pattern="*.json", full.names=TRUE, recursive=TRUE, include.dirs = TRUE )
+ftp_ov_dns_files <- list.files(path=ftp_ov_dns_path, pattern="*.json", full.names=TRUE, recursive=TRUE, include.dirs = TRUE )
+http_s_ov_dns_files <- list.files(path=http_s_ov_dns_path, pattern="*.json", full.names=TRUE, recursive=TRUE, include.dirs = TRUE )
+pop3_ov_dns_files <- list.files(path=pop3_ov_dns_path, pattern="*.json", full.names=TRUE, recursive=TRUE, include.dirs = TRUE )
 
 # Test collection of JSON data from a single file
 json_data_single <- fromJSON(file=http_ov_dns_files[1])
@@ -56,7 +62,10 @@ proto_name = vector()
 avg_entropy= vector()
 avg_ip_req_len = vector()
 
-# Extract features from all json files in directory
+###############################
+# REPEATING CODE
+###############################
+# Extract features from all HTTPovDNS-Static json files in directory
 for(i in 1:length(http_ov_dns_files)){
   json_file_data <- fromJSON(file=http_ov_dns_files[i])
   # Populate respective vectors
