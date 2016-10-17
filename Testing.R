@@ -28,5 +28,14 @@ json_data_single$filename
 json_data_single[[2]]
 json_data_single$`pcap-Md5-hash`
 
+# Get list-item containing the 1st json property name -> DNS-Req-Lens
 json_data_single[[3]][[1]]$feature_name
 json_data_single$props[[1]]$feature_name
+
+# Get list-item containing the 2nd json property name -> IP-Req-Lens
+json_data_single[[3]][[2]]$feature_name
+json_data_single$props[[2]]$feature_name
+
+# Get list-item containing the 4th json property name -> DNS-Req-Qnames-Enc-Comp-Entropy
+json_data_single[[3]][[4]]$feature_name
+json_data_single$props[[4]]$feature_name
