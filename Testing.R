@@ -11,6 +11,7 @@ dataset_path = paste(dirname(getwd()), "Datasets/JSON-4-Classes", sep="/")
 # paste(dataset_path, "HTTPovDNS-Static/All", sep="/")
 http_ov_dns_path = paste(dataset_path, "HTTPovDNS-Static/All", sep="/")
 
+# Get all files in "HTTPovDNS-Static" directory
 http_ov_dns_files <- list.files(path=http_ov_dns_path, pattern="*.json", full.names=TRUE, recursive=TRUE, include.dirs = TRUE )
 
 # Test collection of JSON data from a single file
