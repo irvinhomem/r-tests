@@ -30,6 +30,9 @@ typeof(json_data_single$filename)
 json_data_single[[2]]
 json_data_single$`pcap-Md5-hash`
 
+json_data_single[[4]]
+json_data_single$protocol
+
 # Get list-item containing the 1st json property name -> DNS-Req-Lens
 json_data_single[[3]][[1]]$feature_name
 json_data_single$props[[1]]$feature_name
@@ -48,33 +51,26 @@ entropy_avg = mean(json_data_single$props[[4]]$values)
 # Get average IP-Req-Len for single pcap_json_object
 ip_len_avg =  mean(json_data_single$props[[2]]$values)
 
-#f_name_list = list()
 f_name = vector()
-#avg_entropy_list = list()
+proto_name = vector()
 avg_entropy= vector()
-#avg_ip_req_len_list = list()
 avg_ip_req_len = vector()
-#pcap_features_df = data.frame()
 
 # Extract features from all json files in directory
 for(i in 1:length(http_ov_dns_files)){
   json_file_data <- fromJSON(file=http_ov_dns_files[i])
-  #f_name_list[i] <- json_file_data$filename
+  # Populate respective vectors
   f_name[i] <- json_file_data$filename
-  #avg_entropy_list[i] <- mean(json_file_data$props[[4]]$values)
+  proto_name[i] <- json_file_data$protocol
   avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
-  #avg_ip_req_len_list[i] <- mean(json_file_data$props[[2]]$values)
   avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
-  #pcap_features_df[i] <- data.frame(f_name_list[i], avg_entropy_list[i], avg_ip_req_len_list[i])
 }
 
-f_name
+typeof(f_name)
 
 # Collect extracted features into data-frame
-#pcap_features_df <- data.frame("filename"=)
-#pcap_features_df <- data.frame("filename"=f_name_list, "avg_entropy"=avg_entropy_list, "avg_ip_req_len"=avg_ip_req_len_list, check.rows = TRUE)
 #pcap_features_df <- data.frame(f_name, avg_entropy, avg_ip_req_len) # <--- Also works
-pcap_features_df <- data.frame("filename"=f_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+pcap_features_df <- data.frame("filename"=f_name, "proto"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
 
 print(pcap_features_df)
 #str(pcap_features_df)
