@@ -75,11 +75,27 @@ for(i in 1:length(http_ov_dns_files)){
   avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
 }
 
+http_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+
+for(i in 1:length(ftp_ov_dns_files)){
+  json_file_data <- fromJSON(file=ftp_ov_dns_files[i])
+  # Populate respective vectors
+  f_name[i] <- json_file_data$filename
+  proto_name[i] <- json_file_data$protocol
+  avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
+  avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+}
+
+ftp_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+
+
 typeof(f_name)
 
 # Collect extracted features into data-frame
 #pcap_features_df <- data.frame(f_name, avg_entropy, avg_ip_req_len) # <--- Also works
-pcap_features_df <- data.frame("filename"=f_name, "proto"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+#pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
 
-print(pcap_features_df)
+#print(pcap_features_df)
+print(http_ov_dns_pcap_features_df)
+print(ftp_ov_dns_pcap_features_df)
 #str(pcap_features_df)
