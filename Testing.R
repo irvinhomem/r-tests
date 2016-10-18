@@ -62,6 +62,7 @@ f_name = vector()
 proto_name = vector()
 avg_entropy= vector()
 avg_ip_req_len = vector()
+avg_dns_req_len = vector()
 
 ###############################
 # REPEATING CODE
@@ -74,9 +75,10 @@ for(i in 1:length(http_ov_dns_files)){
   proto_name[i] <- json_file_data$protocol
   avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
   avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+  avg_dns_req_len[i] <- mean(json_file_data$props[[1]]$values)
 }
 
-http_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+http_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, "avg_dns_req_len"=avg_dns_req_len, check.rows = TRUE)
 
 for(i in 1:length(ftp_ov_dns_files)){
   json_file_data <- fromJSON(file=ftp_ov_dns_files[i])
@@ -85,9 +87,10 @@ for(i in 1:length(ftp_ov_dns_files)){
   proto_name[i] <- json_file_data$protocol
   avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
   avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+  avg_dns_req_len[i] <- mean(json_file_data$props[[1]]$values)
 }
 
-ftp_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+ftp_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, "avg_dns_req_len"=avg_dns_req_len, check.rows = TRUE)
 
 for(i in 1:length(http_s_ov_dns_files)){
   json_file_data <- fromJSON(file=http_s_ov_dns_files[i])
@@ -96,9 +99,10 @@ for(i in 1:length(http_s_ov_dns_files)){
   proto_name[i] <- json_file_data$protocol
   avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
   avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+  avg_dns_req_len[i] <- mean(json_file_data$props[[1]]$values)
 }
 
-http_s_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+http_s_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, "avg_dns_req_len"=avg_dns_req_len, check.rows = TRUE)
 
 for(i in 1:length(pop3_ov_dns_files)){
   json_file_data <- fromJSON(file=pop3_ov_dns_files[i])
@@ -107,9 +111,10 @@ for(i in 1:length(pop3_ov_dns_files)){
   proto_name[i] <- json_file_data$protocol
   avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
   avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+  avg_dns_req_len[i] <- mean(json_file_data$props[[1]]$values)
 }
 
-pop3_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+pop3_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, "avg_dns_req_len"=avg_dns_req_len, check.rows = TRUE)
 
 
 typeof(f_name)
@@ -141,15 +146,32 @@ library("rpart")
 
 #http_flds <- createFolds(http_ov_dns_pcap_features_df, k = 10, list = FALSE, times = 10)
 
-frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len)
+frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len + avg_dns_req_len)
 
-train_ctrl <- trainControl(method = "cv", number = 10)
+train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = TRUE)
 
+#tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", cp=0.2405063, trControl = train_ctrl)
 tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", trControl = train_ctrl)
 
 print(tree_model)
 plot(tree_model)
 summary(tree_model)
+
+# Normal tree plots
+plot(tree_model$finalModel)
+text(tree_model$finalModel)
+
+#print(tree_model$trainingData)
+print(tree_model$resample)
+print(tree_model$pred)
+
+
+
+# Fancy Plot from "rattle" package
+library("rattle")
+library(rpart.plot)
+fancyRpartPlot(tree_model$finalModel)
+
 
 
 ###################################
