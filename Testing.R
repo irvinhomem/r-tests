@@ -1,5 +1,6 @@
 library("rjson")
 
+
 # Testing scripts in R
 dirname(getwd())
 
@@ -88,6 +89,28 @@ for(i in 1:length(ftp_ov_dns_files)){
 
 ftp_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
 
+for(i in 1:length(http_s_ov_dns_files)){
+  json_file_data <- fromJSON(file=http_s_ov_dns_files[i])
+  # Populate respective vectors
+  f_name[i] <- json_file_data$filename
+  proto_name[i] <- json_file_data$protocol
+  avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
+  avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+}
+
+http_s_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+
+for(i in 1:length(pop3_ov_dns_files)){
+  json_file_data <- fromJSON(file=pop3_ov_dns_files[i])
+  # Populate respective vectors
+  f_name[i] <- json_file_data$filename
+  proto_name[i] <- json_file_data$protocol
+  avg_entropy[i] <- mean(json_file_data$props[[4]]$values)
+  avg_ip_req_len[i] <- mean(json_file_data$props[[2]]$values)
+}
+
+pop3_ov_dns_pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
+
 
 typeof(f_name)
 
@@ -95,7 +118,51 @@ typeof(f_name)
 #pcap_features_df <- data.frame(f_name, avg_entropy, avg_ip_req_len) # <--- Also works
 #pcap_features_df <- data.frame("filename"=f_name, "proto_label"=proto_name, "avg_entropy"=avg_entropy, "avg_ip_req_len"=avg_ip_req_len, check.rows = TRUE)
 
+# Merge extracted labelled features data-frames into a single data-frame
+# Merge 2 using "merge" function
+#json_features_all_pcaps <- merge
+# Merge multiple using "rbind" function (All column names must be the same)
+json_features_all_pcaps_df <- rbind(http_ov_dns_pcap_features_df, ftp_ov_dns_pcap_features_df, http_s_ov_dns_pcap_features_df, pop3_ov_dns_pcap_features_df)
+
 #print(pcap_features_df)
 print(http_ov_dns_pcap_features_df)
 print(ftp_ov_dns_pcap_features_df)
+print(http_s_ov_dns_pcap_features_df)
+print(pop3_ov_dns_pcap_features_df)
+
+print(json_features_all_pcaps_df)
 #str(pcap_features_df)
+
+############################
+##  Partition the dataset into k-folds i.e. 10-folds in this case
+############################
+library("caret")
+library("rpart")
+
+#http_flds <- createFolds(http_ov_dns_pcap_features_df, k = 10, list = FALSE, times = 10)
+
+frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len)
+
+train_ctrl <- trainControl(method = "cv", number = 10)
+
+tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", trControl = train_ctrl)
+
+print(tree_model)
+plot(tree_model)
+summary(tree_model)
+
+
+###################################
+###  Classification starts here
+###################################
+#library(rpart)
+# Decision Trees
+
+#frmla = proto_label ~ avg_entropy + avg_ip_req_len
+#fit = rpart(frmla, method = "class", data = json_features_all_pcaps_df)
+#printcp(fit)  # Display results
+#plotcp(fit)   # Visualize cross-validation results
+#summary(fit)  # Detailed summary of splits
+
+## Plot Tree
+#plot(fit, uniform=TRUE, main="Classification Tree for Tunneled Protocols")
