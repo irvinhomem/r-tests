@@ -165,6 +165,22 @@ text(tree_model$finalModel)
 print(tree_model$resample)
 print(tree_model$pred)
 
+confusionMatrix(tree_model)
+confusionMatrix(data=tree_model$pred$pred, reference = tree_model$pred$obs)
+
+#result <- confusionMatrix(tree_model)
+#print(result)
+
+#precision <- result$byClass["Sensitivity"]
+#print(precision)
+
+#tree_model$perfNames
+#library(ROCR)  # <--- Only works for binary classification so far in current version
+#pred <- prediction(tree_model$pred$pred, tree_model$pred$obs)
+## Recall-Precision Curve
+#RP.perf <- performance(pred, "prec", "rec")
+#plot(RP.perf)
+#posPredValue(tree_model)
 
 
 # Fancy Plot from "rattle" package
