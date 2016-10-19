@@ -146,7 +146,8 @@ library("rpart")
 
 #http_flds <- createFolds(http_ov_dns_pcap_features_df, k = 10, list = FALSE, times = 10)
 
-frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len + avg_dns_req_len)
+frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len + avg_dns_req_len)  # With 3 features
+#frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len)                   # With 2 features
 
 train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = TRUE)
 
@@ -167,6 +168,7 @@ print(tree_model$pred)
 
 confusionMatrix(tree_model)
 confusionMatrix(data=tree_model$pred$pred, reference = tree_model$pred$obs)
+
 
 #result <- confusionMatrix(tree_model)
 #print(result)
