@@ -137,10 +137,13 @@ library("rpart")
 
 #http_flds <- createFolds(http_ov_dns_pcap_features_df, k = 10, list = FALSE, times = 10)
 
-frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len + avg_dns_req_len)  # With 3 features
-#frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len)                   # With 2 features
+#frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len + avg_dns_req_len)  # With 3 features
+frmla = as.formula(proto_label ~ avg_entropy + avg_ip_req_len)                   # With 2 features
 
-train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = TRUE, classProbs = TRUE) # sampling = "none"
+#train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = TRUE, returnResamp = TRUE, classProbs = TRUE) # classProbs = TRUE # sampling = "none"
+#train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = "final", returnResamp = TRUE, classProbs = TRUE) # classProbs = TRUE # sampling = "none"
+train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = "final", returnResamp = "final") # classProbs = TRUE # sampling = "none"
+
 
 #tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", cp=0.2405063, trControl = train_ctrl)
 tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", trControl = train_ctrl)
@@ -155,17 +158,25 @@ text(tree_model$finalModel)
 
 # Extra info
 # Training Data
-print(tree_model$trainingData)
+#print(tree_model$trainingData)   # <-- Works, but shows all the data used in totality
+
 # Resampling parameters
-print(tree_model$resample)
+#print(tree_model$resample)
+tree_model$resample
+
 # Predictions and Observations from the k-fold cross validation
-print(tree_model$pred)
-tree_model$control
+#print(tree_model$pred)     # <-- Works but shows all the samples with different "cp" values (Complexity parameter) 
+#### Fixed after setting the "savePredictions" and the "returnSamp" to "final" to save only the final predictions (corrects the error above and below)
+tree_model$pred[order(tree_model$pred$Resample, tree_model$pred$rowIndex),]            # <-- Works but shows all the samples with different "cp" values (Complexity parameter)
+tree_model$results
+tree_model$bestTune
+tree_model$finalModel$splits
 
 tree_model$method
 #print(tree_model$modelInfo)
 
 # Confusion Matrix
+print("Confusion Matrices for training model")
 confusionMatrix(tree_model)
 confusionMatrix(data=tree_model$pred$pred, reference = tree_model$pred$obs)
 
