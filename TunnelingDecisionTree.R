@@ -146,7 +146,8 @@ train_ctrl <- trainControl(method = "cv", number = 10, p=0.9, savePredictions = 
 
 
 #tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", cp=0.2405063, trControl = train_ctrl)
-tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", trControl = train_ctrl)
+tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", cp = 0.002, trControl = train_ctrl)
+#tree_model <- train(frmla, data=json_features_all_pcaps_df, method = "rpart", trControl = train_ctrl)
 
 print(tree_model)
 plot(tree_model)
