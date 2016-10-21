@@ -3,6 +3,7 @@ library("rjson")
 # Testing scripts in R
 dirname(getwd())
 
+#Testing Concatenation
 concat_str = paste("string 1", "string 2", sep="/")
 
 # paste(dirname(getwd()), "Datasets/JSON-4-Classes", sep="/")
